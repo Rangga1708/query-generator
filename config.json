@@ -1,0 +1,18 @@
+{
+  "list_of_features": 
+  [
+    {
+      "id": "vidcall-1",
+      "name": "[Video Call] Blacklist to Video Call"
+    }
+  ],
+  "query":
+  [
+    {
+      "id": "vidcall-1",
+      "query_select": "SELECT * FROM user_profile.blacklisted_user WHERE blacklist_value IN ({blacklist_value});",
+      "query_execute": "MERGE INTO USER_PROFILE.BLACKLISTED_USER tgt USING (SELECT '{blacklisted_id}' AS blacklisted_id, '{blacklist_type}' AS blacklist_type, '{blacklist_value}' AS blacklist_value, {status} AS is_deleted, 'SYSTEM' AS created_by, SYSDATE AS created_time, 'SYSTEM' AS updated_by, SYSDATE AS updated_time FROM DUAL) src ON (tgt.blacklist_type = src.blacklist_type AND tgt.blacklist_value = src.blacklist_value) WHEN MATCHED THEN UPDATE SET tgt.blacklisted_id = src.blacklisted_id, tgt.is_deleted = src.is_deleted, tgt.updated_by = src.updated_by, tgt.updated_time = src.updated_time WHEN NOT MATCHED THEN INSERT (blacklisted_id, blacklist_type, blacklist_value, is_deleted, created_by, created_time, updated_by, updated_time) VALUES (src.blacklisted_id, src.blacklist_type, src.blacklist_value, src.is_deleted, src.created_by, src.created_time, src.updated_by, src.updated_time);"
+    }
+  ]
+}
+
