@@ -1,17 +1,58 @@
 {
-  "list_of_features": 
+  "features": 
   [
     {
       "id": "vidcall-1",
-      "name": "[Video Call] Blacklist to Video Call"
+      "name": "[Video Call] Blacklist to Video Call",
+      "notes": "1. Input one of these value for blacklist_type:\n- device-type\n- nik\n- phone-number\n2. Input the value to be blacklisted in column blacklist_value\n- For device type, check in table provisioning.user_registration\n- For phone number, don't forget to use the prefix country code (ex: \"6281234567\")\n3. Input one of these value for status:\n- 0: BLACKLIST\n- 1: RELEASE"
+    },
+    {
+      "id": "ntb-1",
+      "name": "[NTB] Setting criteria for eligible STP",
+      "notes": "1. Use the following query SELECT first to check the current parameter_value\n- SELECT * FROM provisioning.config WHERE parameter_key = 'eligible.stp.setting';\n2. Put the parameter_value to the table below, and add the new value / remove the old value.\n- Example: \nexisting value =  \n```\n{\n\"fullnameMinScore\": 100,\n\"motherMaidenNameMinScore\": 0,\n\"nikBlacklist\": [\"123\", \"456\"],\n\"postalCodeBlacklist\": [\"000\", \"111\"]\n}\n```\nnew value = \n```\n{\n\"fullnameMinScore\": 100,\n\"motherMaidenNameMinScore\": 0,\n\"nikBlacklist\": [\"123\", \"456\", \"789\"],\n\"postalCodeBlacklist\": [\"000\"]\n}\n```"
     }
   ],
-  "query":
+  "tables":
   [
     {
-      "id": "vidcall-1",
-      "query_select": "SELECT * FROM user_profile.blacklisted_user WHERE blacklist_value IN ({blacklist_value});",
-      "query_execute": "MERGE INTO USER_PROFILE.BLACKLISTED_USER tgt\nUSING (SELECT\n  '{blacklisted_id}' AS blacklisted_id,\n  '{blacklist_type}' AS blacklist_type,\n  '{blacklist_value}' AS blacklist_value,\n  {status} AS is_deleted,\n  'SYSTEM' AS created_by,\n  SYSDATE AS created_time,\n  'SYSTEM' AS updated_by,\n  SYSDATE AS updated_time\n  FROM DUAL) src\nON (tgt.blacklist_type = src.blacklist_type AND tgt.blacklist_value = src.blacklist_value)\nWHEN MATCHED THEN UPDATE SET\n  tgt.blacklisted_id = src.blacklisted_id,\n  tgt.is_deleted = src.is_deleted,\n  tgt.updated_by = src.updated_by,\n  tgt.updated_time = src.updated_time\nWHEN NOT MATCHED THEN INSERT (blacklisted_id, blacklist_type, blacklist_value, is_deleted, created_by, created_time, updated_by, updated_time)\nVALUES (src.blacklisted_id, src.blacklist_type, src.blacklist_value, src.is_deleted, src.created_by, src.created_time, src.updated_by, src.updated_time);"
+      "id": "0d2c4640-d520-45d2-b475-bfffac793259",
+      "feature_id": "vidcall-1",
+      "table_name": "user_profile.blacklisted_user",
+      "query_select": "SELECT * FROM user_profile.blacklisted_user WHERE blacklist_value IN ({Blacklist Value});",
+      "query_execute": "MERGE INTO USER_PROFILE.BLACKLISTED_USER tgt\nUSING (SELECT\n  '{uuid}' AS blacklisted_id,\n  '{Blacklist Type}' AS blacklist_type,\n  '{Blacklist Value}' AS blacklist_value,\n  {Status} AS is_deleted,\n  'SYSTEM' AS created_by,\n  SYSDATE AS created_time,\n  'SYSTEM' AS updated_by,\n  SYSDATE AS updated_time\n  FROM DUAL) src\nON (tgt.blacklist_type = src.blacklist_type AND tgt.blacklist_value = src.blacklist_value)\nWHEN MATCHED THEN UPDATE SET\n  tgt.blacklisted_id = src.blacklisted_id,\n  tgt.is_deleted = src.is_deleted,\n  tgt.updated_by = src.updated_by,\n  tgt.updated_time = src.updated_time\nWHEN NOT MATCHED THEN INSERT (blacklisted_id, blacklist_type, blacklist_value, is_deleted, created_by, created_time, updated_by, updated_time)\nVALUES (src.blacklisted_id, src.blacklist_type, src.blacklist_value, src.is_deleted, src.created_by, src.created_time, src.updated_by, src.updated_time);",
+      "columns": 
+      [
+        {
+          "name": "Blacklist Type",
+          "lov": ["device-type", "phone-number", "nik"]
+        },
+        {
+          "name": "Blacklist Value",
+          "lov": []
+        },
+        {
+          "name": "Status",
+          "lov": ["0", "1"]
+        }
+      ]
+    },
+    {
+      "id": "ac89b91e-2509-4121-9af3-9b997c940004",
+      "feature_id": "ntb-1",
+      "table_name": "provisioning.config",
+      "query_select": "SELECT * FROM provisioning.config WHERE parameter_key = 'eligible.stp.setting';",
+      "query_execute": "UPDATE provisioning.config SET parameter_value = {Parameter Value} WHERE parameter_key = 'eligible.stp.setting';",
+      "columns": 
+      [
+        {
+          "name": "Parameter Key",
+          "lov": ["eligible.stp.setting"]
+        },
+        {
+          "name": "Parameter Value",
+          "lov": []
+        }
+      ]
     }
   ]
 }
