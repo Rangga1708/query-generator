@@ -7,9 +7,6 @@
   "query_label_feature": "Select the feature:",
   "query_error_feature_not_exist": "Feature is not exist. Please chose another feature.",
   "query_label_table_name": "Table Name: ",
-  "query_label_blacklist_type_column": "Blacklist Type",
-  "query_label_blacklist_value_column": "Blacklist Value",
-  "query_label_status_column": "Status",
   "query_button_download": "Download",
   "header_notes": "Notes"
 }
