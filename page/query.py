@@ -135,7 +135,7 @@ def download_button(object_to_download, download_filename):
     <html>
     <head>
     <title>Start Auto Download file</title>
-    <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
     $('<a href="data:application/octet-stream;base64,{b64}" download="{download_filename}">')[0].click()
     </script>
