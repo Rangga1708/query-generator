@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import uuid
 import base64
+import io
 import streamlit.components.v1 as components
 from common_handling import set_lockey, find_config, find_value_in_dataframe
 
@@ -76,7 +77,7 @@ def execute_feature(features, tables, feature_id, feature_name):
                 key = "data-" + table.id
             )
 
-            downloaded = st.form_submit_button(lockey("query_button_download"))
+            downloaded = st.form_submit_button(lockey("query_button_confirmation"))
             
         if downloaded:
             download_query(data,
@@ -99,6 +100,24 @@ def define_column_config(column):
             required = True
         )
     
+# def download_query(data, feature_name, table_name, columns_name, query_select, query_execute):
+#     data_select = data.astype(str).apply(lambda col: ", ".join(f"'{val}'" for val in col)).to_dict()
+
+#     for column in columns_name:
+#         query_select = query_select.replace(f"{{{column}}}", data_select[column])
+    
+#     data["query"] = data.apply(lambda row: generate_execute_query(row, query_execute, columns_name), axis = 1)
+#     query_execute = " \n\n".join(data["query"])
+    
+#     all_query = f"--SELECT--\n{query_select}\n\n--EXECUTE--\n{query_execute}"
+#     filename = feature_name + " - " + table_name + ".sql"
+
+#     components.html(
+#         download_button(all_query, filename),
+#         height=0,
+#     )
+
+@st.dialog(title = "Confirmation")
 def download_query(data, feature_name, table_name, columns_name, query_select, query_execute):
     data_select = data.astype(str).apply(lambda col: ", ".join(f"'{val}'" for val in col)).to_dict()
 
@@ -111,10 +130,14 @@ def download_query(data, feature_name, table_name, columns_name, query_select, q
     all_query = f"--SELECT--\n{query_select}\n\n--EXECUTE--\n{query_execute}"
     filename = feature_name + " - " + table_name + ".sql"
 
-    components.html(
-        download_button(all_query, filename),
-        height=0,
-    )
+    st.write(lockey("query_description_download_confirmation"))
+
+    if st.download_button(
+        label = lockey("query_button_download"),
+        data = all_query,
+        file_name = filename,
+        mime="text/plain"):
+        st.rerun()
 
 def generate_execute_query(row, query, columns_name):
     generated_uuid = str(uuid.uuid4())
@@ -135,7 +158,7 @@ def download_button(object_to_download, download_filename):
     <html>
     <head>
     <title>Start Auto Download file</title>
-    <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
     $('<a href="data:application/octet-stream;base64,{b64}" download="{download_filename}">')[0].click()
     </script>
