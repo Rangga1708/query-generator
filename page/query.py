@@ -117,7 +117,7 @@ def define_column_config(column):
 #         height=0,
 #     )
 
-@st.dialog(title = lockey("query_title_download_confirmation"))
+@st.dialog(title = "Confirmation")
 def download_query(data, feature_name, table_name, columns_name, query_select, query_execute):
     data_select = data.astype(str).apply(lambda col: ", ".join(f"'{val}'" for val in col)).to_dict()
 
