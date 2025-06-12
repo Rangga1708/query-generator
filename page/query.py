@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import uuid
 import base64
-import io
 import streamlit.components.v1 as components
 from common_handling import set_lockey, find_config, find_value_in_dataframe
 
@@ -99,23 +98,6 @@ def define_column_config(column):
             options = column["lov"],
             required = True
         )
-    
-# def download_query(data, feature_name, table_name, columns_name, query_select, query_execute):
-#     data_select = data.astype(str).apply(lambda col: ", ".join(f"'{val}'" for val in col)).to_dict()
-
-#     for column in columns_name:
-#         query_select = query_select.replace(f"{{{column}}}", data_select[column])
-    
-#     data["query"] = data.apply(lambda row: generate_execute_query(row, query_execute, columns_name), axis = 1)
-#     query_execute = " \n\n".join(data["query"])
-    
-#     all_query = f"--SELECT--\n{query_select}\n\n--EXECUTE--\n{query_execute}"
-#     filename = feature_name + " - " + table_name + ".sql"
-
-#     components.html(
-#         download_button(all_query, filename),
-#         height=0,
-#     )
 
 @st.dialog(title = "Confirmation")
 def download_query(data, feature_name, table_name, columns_name, query_select, query_execute):
@@ -147,22 +129,3 @@ def generate_execute_query(row, query, columns_name):
         query = query.replace(f"{{{column}}}", str(row[column]))
 
     return query
-
-def download_button(object_to_download, download_filename):
-    if isinstance(object_to_download, str):
-        b64 = base64.b64encode(object_to_download.encode()).decode()
-    else:
-        b64 = base64.b64encode(object_to_download).decode()
-
-    dl_link = f"""
-    <html>
-    <head>
-    <title>Start Auto Download file</title>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script>
-    $('<a href="data:application/octet-stream;base64,{b64}" download="{download_filename}">')[0].click()
-    </script>
-    </head>
-    </html>
-    """
-    return dl_link

@@ -18,7 +18,7 @@ def app():
    with tabs[0]:
       update_feature()
 
-    with tabs[1]:
+   with tabs[1]:
       with st.form(key = "Form Feature"):
          st.write(lockey("rule_label_features"))
          feature_id = st.text_input(
@@ -44,50 +44,50 @@ def update_feature(features, tables):
          index = None
          )
 
-      if feature is None:
-         return {}
-      elif feature is not None and feature not in features["name"].values:
-         st.error(lockey("rule_error_feature_not_exist"))
-         return {}
-   
-      with st.form(key = "Update Feature"):
-         feature_rule = find_value_in_dataframe(
-            data = features,
-            search_value = feature,
-            reference_column = "name"
-         )
+   if feature is None:
+      return {}
+   elif feature is not None and feature not in features["name"].values:
+      st.error(lockey("rule_error_feature_not_exist"))
+      return {}
 
-         feature_name = st.text_input(
-            label = lockey("rule_label_feature_name"),
-            value = feature
-         )
+   with st.form(key = "Update Feature"):
+      feature_rule = find_value_in_dataframe(
+         data = features,
+         search_value = feature,
+         reference_column = "name"
+      )
 
-         notes = st.text_area(
-            label = lockey("rule_label_feature_notes"),
-            value = feature_rule["notes"]
-         )
+      feature_name = st.text_input(
+         label = lockey("rule_label_feature_name"),
+         value = feature
+      )
 
-      st.divider()
+      notes = st.text_area(
+         label = lockey("rule_label_feature_notes"),
+         value = feature_rule["notes"]
+      )
 
-      feature_tables = find_value_in_dataframe(
-            data = tables,
-            search_value = feature_rule["id"],
-            reference_column = "feature_id"
-         )
+   st.divider()
 
-      for table in feature_tables:
-         table_name = st.text_input(
-            label = lockey("rule_label_table_name"),
-            placeholder = table["table_name"]
-         )
+   feature_tables = find_value_in_dataframe(
+         data = tables,
+         search_value = feature_rule["id"],
+         reference_column = "feature_id"
+      )
 
-         query_select = st.text_area(
-            label = lockey("rule_label_query_select")
-         )
+   for table in feature_tables:
+      table_name = st.text_input(
+         label = lockey("rule_label_table_name"),
+         placeholder = table["table_name"]
+      )
 
-         query_execute = st.text_area(
-            label = lockey("rule_label_query_execute") 
-         )
+      query_select = st.text_area(
+         label = lockey("rule_label_query_select")
+      )
+
+      query_execute = st.text_area(
+         label = lockey("rule_label_query_execute") 
+      )
 
 
    st.divider()
