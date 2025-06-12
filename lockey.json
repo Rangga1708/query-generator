@@ -9,7 +9,6 @@
   "query_label_table_name": "Table Name: ",
   "query_button_confirmation": "Confirm",
   "query_button_download": "Download",
-  "query_title_download_confirmation": "Confirmation",
   "query_description_download_confirmation": "Are you sure you want to download the query?",
   "header_notes": "Notes"
 }
