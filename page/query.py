@@ -78,13 +78,13 @@ def execute_feature(features, tables, feature_id, feature_name):
 
             downloaded = st.form_submit_button(lockey("query_button_download"))
             
-            if downloaded:
-                download_query(data,
-                               feature_name,
-                               table.table_name,
-                               columns_name,
-                               table.query_select,
-                               table.query_execute)
+        if downloaded:
+            download_query(data,
+                            feature_name,
+                            table.table_name,
+                            columns_name,
+                            table.query_select,
+                            table.query_execute)
 
 def define_column_config(column):
     if len(column["lov"]) == 0:

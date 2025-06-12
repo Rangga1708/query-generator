@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from page import home, query, rule
+# from page import home, query, rule
+from page import home, query
 from api import get_v1_localization_key
 from api import get_v1_config
 from common_handling import set_lockey
@@ -14,8 +15,8 @@ st.set_page_config(page_title=lockey("title_page"), layout="wide")
 
 apps = [
     {"func": home.app, "title": lockey("title_home"), "icon": "house"},
-    {"func": query.app, "title": lockey("title_query"), "icon": "database"},
-    {"func": rule.app, "title": lockey("title_rule"), "icon": "book"}
+    {"func": query.app, "title": lockey("title_query"), "icon": "database"}
+    # {"func": rule.app, "title": lockey("title_rule"), "icon": "book"}
 ]
 
 titles = [app["title"] for app in apps]
