@@ -3,11 +3,11 @@ from streamlit_option_menu import option_menu
 # from page import home, query, rule
 from page import home, query
 from api import get_v1_localization_key
-from api import get_v1_config
+from api import get_v1_config, get_v2_config
 from common_handling import set_lockey
 
 st.session_state.localization_key = get_v1_localization_key.execute()['data']
-st.session_state.config = get_v1_config.execute()['data']
+st.session_state.config = get_v2_config.execute()['data']
 
 lockey = set_lockey.execute
 
