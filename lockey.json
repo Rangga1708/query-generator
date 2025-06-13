@@ -26,5 +26,9 @@
   "rule_label_table_name": "Table name",
   "rule_label_query_select": "Query Select",
   "rule_label_query_execute": "Query Execute",
-  "rule_button_submit_feature": "Submit"
+  "rule_label_columns": "Columns",
+  "rule_button_submit_feature": "Submit",
+  "rule_button_update_feature": "Update",
+  "rule_label_update_success": "Feature updated!",
+  "rule_label_update_failed": "Update feature failed! Please try again!"
 }
