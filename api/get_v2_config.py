@@ -27,8 +27,6 @@ def execute():
         "tables": tables
     }
 
-    print(data)
-
     return response.execute("SUCCESS", 
                             "Config key fetched successfully",
                             data)

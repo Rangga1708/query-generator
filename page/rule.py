@@ -119,11 +119,12 @@ def add_new_feature(features):
       }
       
       if st.form_submit_button(label = lockey("rule_button_submit_feature")):
-         try:
-            post_v1_add_feature.execute(request)
-            st.success(lockey("rule_label_add_new_feature_success"))
-         except:
-            st.success(lockey("rule_label_add_new_feature_failed"))
+         response = post_v1_add_feature.execute(request)
+
+         if response["status"] == "200":
+            st.success(response["message"])
+         else:
+            st.error(response["message"])
 
 def add_new_table_rule(features, tables):
    feature = st.selectbox(
