@@ -5,6 +5,13 @@ from common_handling import response
 lockey = set_lockey.execute
 
 def execute(request):
+    if request["name"] is None:
+        return response.execute(
+            status = "30001",
+            message = lockey("rule_label_invalid_input"),
+            data = {}
+        ) 
+
     client = set_client.execute()
 
     try:
@@ -19,7 +26,7 @@ def execute(request):
 
         if len(feature_data) != 0:
             return response.execute(
-                status = "30001",
+                status = "30002",
                 message = lockey("rule_label_feature_already_exist"),
                 data = {}
             )

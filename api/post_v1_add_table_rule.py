@@ -5,9 +5,65 @@ from common_handling import response
 lockey = set_lockey.execute
 
 def execute(request):
+    if not is_request_valid(request):
+        return response.execute(
+            status = "30001",
+            message = lockey("rule_label_invalid_input"),
+            data = {}
+        ) 
+
     client = set_client.execute()
 
-    # try:
-    #     table_rule = client.table("tables").select("id").eq(request["name"]).execute().data
+    try:
+        table_rule = (
+            client
+            .table("tables")
+            .select("id")
+            .eq("table_name", request["table_name"])
+            .eq("query_select", request["query_select"])
+            .eq("query_execute", request["query_execute"])
+            .eq("columns", request["columns"])
+            .execute()
+            .data)
+        
+        if len(table_rule) != 0:
+            return response.execute(
+                status = "30003",
+                message = lockey("rule_label_table_rule_already_exist"),
+                data = {}
+            )
+        
+    except:
+        return response.execute(
+            status = "80000",
+            message = lockey("rule_label_add_new_table_rule_failed"),
+            data = {}
+        )
+    
+    try:
+        client.table("tables").insert(request).execute()
+        
+        return response.execute(
+                status = "200",
+                message = lockey("rule_label_add_new_table_rule_success"),
+                data = {}
+            )
+    
+    except:
+        return response.execute(
+            status = "80000",
+            message = lockey("rule_label_add_new_table_rule_failed"),
+            data = {}
+        )
 
-    client.table("tables").insert(request).execute()
+def is_request_valid(request):
+    if ((request["table_name"] is None) or
+        (request["query_select"] is None) or
+        (request["query_execute"] is None)):
+        return False
+    
+    for column in request["columns"]:
+        if (column["name"] is None) or (column["name"] == ""):
+            return False
+
+    return True

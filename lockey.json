@@ -26,11 +26,13 @@
   "rule_label_columns": "Columns",
   "rule_button_submit_feature": "Submit",
   "rule_button_update_feature": "Update",
+  "rule_label_invalid_input": "Invalid input! Please recheck your inputs!",
   "rule_label_update_success": "Feature is updated!",
   "rule_label_update_failed": "Update feature is failed! Please try again!",
   "rule_label_add_new_feature_success": "Feature is succesfully added!",
   "rule_label_add_new_feature_failed": "Add new feature is failed! Please try again!",
   "rule_label_feature_already_exist": "Feature already existed!",
   "rule_label_add_new_table_rule_success": "Table rule is succesfully added!",
-  "rule_label_add_new_table_rule_failed": "Add new table rule is failed! Please try again!"
+  "rule_label_add_new_table_rule_failed": "Add new table rule is failed! Please try again!",
+  "rule_label_table_rule_already_exist": "Table rule already existed!"
 }

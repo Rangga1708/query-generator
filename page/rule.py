@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import json
 from datetime import datetime as dt
-from common_handling import set_lockey, find_config, find_value_in_dataframe
+from common_handling import set_lockey
+from common_handling import find_config
+from common_handling import find_value_in_dataframe
 from api import put_v1_update_feature
 from api import post_v1_add_feature
 from api import post_v1_add_table_rule
@@ -103,11 +105,12 @@ def update_feature(features, tables):
             "tables": feature_tables_updated
          }
 
-         try:
-            put_v1_update_feature.execute(request)
-            st.success(lockey("rule_label_update_success"))
-         except:
-            st.error(lockey("rule_label_update_failed"))
+         response = put_v1_update_feature.execute(request)
+
+         if response["status"] == "200":
+            st.success(response["message"])
+         else:
+            st.error(response["message"])
 
 def add_new_feature(features):
    with st.form(key = "Form New Feature", border = True):
@@ -163,8 +166,9 @@ def add_new_table_rule(features, tables):
       }
 
       if st.form_submit_button(label = lockey("rule_button_submit_feature")):
-         try:
-            post_v1_add_table_rule.execute(request)
-            st.success(lockey("rule_label_add_new_table_rule_success"))
-         except:
-            st.success(lockey("rule_label_add_new_table_rule_failed"))
+         response = post_v1_add_table_rule.execute(request)
+
+         if response["status"] == "200":
+            st.success(response["message"])
+         else:
+            st.error(response["message"])
