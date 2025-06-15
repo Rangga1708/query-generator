@@ -4,6 +4,8 @@ import json
 from datetime import datetime as dt
 from common_handling import set_lockey, find_config, find_value_in_dataframe
 from api import put_v1_update_feature
+from api import post_v1_add_feature
+from api import post_v1_add_table_rule
 
 lockey = set_lockey.execute
 config = find_config.execute
@@ -21,47 +23,33 @@ def app():
    with tabs[0]:
       update_feature(features, tables)
 
-   # with tabs[1]:
-   #    with st.form(key = "Form Feature"):
-   #       st.write(lockey("rule_label_features"))
-   #       feature_id = st.text_input(
-   #          label = lockey("rule_label_feature_id"),
-   #          placeholder = lockey("rule_placeholder_feature_id"))
-   #       feature_name = st.text_input(
-   #          label = lockey("rule_label_feature_name"),
-   #          placeholder = lockey("rule_placeholder_feature_name"))
-   #       notes = st.text_area(label = lockey("rule_label_feature_notes"))
-         
-   #       submitted = st.form_submit_button(
-   #          label = lockey("rule_button_submit_feature")
-   #       )
-
-   #        if submitted:
-   #           st.write(notes)
+   with tabs[1]:
+      add_new_feature(features)
+   
+   with tabs[2]:
+      add_new_table_rule(features, tables)
 
 def update_feature(features, tables): 
    feature = st.selectbox(
       label = lockey("rule_label_feature"),
       options = features.sort_values(by = "name")["name"],
-      index = None
+      index = None,
+      key = "update_feature"
       )
 
-   if "clean_field" not in st.session_state:
-      st.session_state.clean_field = False
-
-   if (feature is None) or (st.session_state.clean_field):
+   if feature is None:
       return {}
    elif feature is not None and feature not in features["name"].values:
       st.error(lockey("rule_error_feature_not_exist"))
       return {}
 
-   with st.form(key = "Update Feature", border = True):
-      feature_info = find_value_in_dataframe.execute(
+   feature_info = find_value_in_dataframe.execute(
          data = features,
          search_value = feature,
          reference_column = "name"
       ).iloc[0]
 
+   with st.form(key = "Update Feature", border = True):
       feature_info_updated = {
          "id": feature_info["id"],
          "name": st.text_input(
@@ -118,7 +106,64 @@ def update_feature(features, tables):
          try:
             put_v1_update_feature.execute(request)
             st.success(lockey("rule_label_update_success"))
-            st.session_state.clean_fields = True
-            st.rerun()
          except:
             st.error(lockey("rule_label_update_failed"))
+
+def add_new_feature(features):
+   with st.form(key = "Form New Feature", border = True):
+      request = {
+         "name": st.text_input(
+            label = lockey("rule_label_feature_name"),
+            placeholder = lockey("rule_placeholder_feature_name")),
+         "notes": st.text_area(label = lockey("rule_label_feature_notes"))
+      }
+      
+      if st.form_submit_button(label = lockey("rule_button_submit_feature")):
+         try:
+            post_v1_add_feature.execute(request)
+            st.success(lockey("rule_label_add_new_feature_success"))
+         except:
+            st.success(lockey("rule_label_add_new_feature_failed"))
+
+def add_new_table_rule(features, tables):
+   feature = st.selectbox(
+      label = lockey("rule_label_feature"),
+      options = features.sort_values(by = "name")["name"],
+      index = None,
+      key = "add new table rule"
+      )
+
+   if feature is None:
+      return {}
+   elif feature is not None and feature not in features["name"].values:
+      st.error(lockey("rule_error_feature_not_exist"))
+      return {}
+   
+   feature_info = find_value_in_dataframe.execute(
+         data = features,
+         search_value = feature,
+         reference_column = "name"
+      ).iloc[0]
+   
+   with st.form(key = "Form New Table Rule", border = True):
+      request = {
+         "feature_id": feature_info["id"],
+         "table_name": st.text_input(label = lockey("rule_label_table_name")),
+         "query_select": st.text_area(label = lockey("rule_label_query_select")),
+         "query_execute": st.text_area(label = lockey("rule_label_query_execute")),
+         "columns": json.loads(st.text_area(
+            label = lockey("rule_label_columns"),
+            value = json.dumps([
+               {
+                  "lov":[],
+                  "name": ""
+               }
+            ], indent = 2)))
+      }
+
+      if st.form_submit_button(label = lockey("rule_button_submit_feature")):
+         try:
+            post_v1_add_table_rule.execute(request)
+            st.success(lockey("rule_label_add_new_table_rule_success"))
+         except:
+            st.success(lockey("rule_label_add_new_table_rule_failed"))

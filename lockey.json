@@ -17,9 +17,6 @@
   "rule_title_insert_table": ":material/add_box: Insert New Table",
   "rule_label_feature": "Select the feature:",
   "rule_error_feature_not_exist": "Feature is not exist. Please chose another feature.",
-  "rule_label_features": "Feature",
-  "rule_label_feature_id": "Feature ID",
-  "rule_placeholder_feature_id": "Format: 'key-number', Ex: vidcal-1",
   "rule_label_feature_name": "Feature Name",
   "rule_placeholder_feature_name": "Format: [feature_name] action, Ex: [Vidcall] Blacklist to Video Call",
   "rule_label_feature_notes": "Notes",
@@ -29,6 +26,10 @@
   "rule_label_columns": "Columns",
   "rule_button_submit_feature": "Submit",
   "rule_button_update_feature": "Update",
-  "rule_label_update_success": "Feature updated!",
-  "rule_label_update_failed": "Update feature failed! Please try again!"
+  "rule_label_update_success": "Feature is updated!",
+  "rule_label_update_failed": "Update feature is failed! Please try again!",
+  "rule_label_add_new_feature_success": "Feature is succesfully added!",
+  "rule_label_add_new_feature_failed": "Add new feature is failed! Please try again!",
+  "rule_label_add_new_table_rule_success": "Table rule is succesfully added!",
+  "rule_label_add_new_table_rule_failed": "Add new table rule is failed! Please try again!"
 }
