@@ -1,3 +1,4 @@
+import json
 from common_handling import set_lockey
 from common_handling import set_client
 from common_handling import response
@@ -5,6 +6,15 @@ from common_handling import response
 lockey = set_lockey.execute
 
 def execute(request):
+    try:
+        request["columns"] = json.loads(request["columns"])
+    except:
+        return response.execute(
+            status = "30001",
+            message = lockey("rule_label_invalid_input"),
+            data = {}
+        ) 
+
     if not is_request_valid(request):
         return response.execute(
             status = "30001",
@@ -57,13 +67,17 @@ def execute(request):
         )
 
 def is_request_valid(request):
-    if ((request["table_name"] is None) or
-        (request["query_select"] is None) or
-        (request["query_execute"] is None)):
+    if ((request["table_name"] == '') or
+        (request["query_select"] == '') or
+        (request["query_execute"] == '') or
+        (request["columns"] == [])):
         return False
     
+    #need more logics
     for column in request["columns"]:
-        if (column["name"] is None) or (column["name"] == ""):
+        if "name" not in request["columns"]:
+            return False
+        elif column["name"] == "":
             return False
 
     return True

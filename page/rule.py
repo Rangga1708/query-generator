@@ -155,14 +155,14 @@ def add_new_table_rule(features, tables):
          "table_name": st.text_input(label = lockey("rule_label_table_name")),
          "query_select": st.text_area(label = lockey("rule_label_query_select")),
          "query_execute": st.text_area(label = lockey("rule_label_query_execute")),
-         "columns": json.loads(st.text_area(
+         "columns": st.text_area(
             label = lockey("rule_label_columns"),
             value = json.dumps([
                {
                   "lov":[],
                   "name": ""
                }
-            ], indent = 2)))
+            ], indent = 2))
       }
 
       if st.form_submit_button(label = lockey("rule_button_submit_feature")):

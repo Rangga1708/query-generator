@@ -5,7 +5,7 @@ from common_handling import response
 lockey = set_lockey.execute
 
 def execute(request):
-    if request["name"] is None:
+    if not is_request_valid(request):
         return response.execute(
             status = "30001",
             message = lockey("rule_label_invalid_input"),
@@ -53,3 +53,6 @@ def execute(request):
             message = lockey("rule_label_add_new_feature_failed"),
             data = {}
         )
+    
+def is_request_valid(request):
+    return request["name"] != ''
