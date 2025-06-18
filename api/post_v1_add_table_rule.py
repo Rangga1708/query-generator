@@ -73,11 +73,13 @@ def is_request_valid(request):
         (request["columns"] == [])):
         return False
     
-    #need more logics
     for column in request["columns"]:
-        if "name" not in request["columns"]:
+        if (("name" not in column) or
+            ("lov" not in column)):
             return False
         elif column["name"] == "":
+            return False
+        elif type(column["lov"]) != type([]):
             return False
 
     return True

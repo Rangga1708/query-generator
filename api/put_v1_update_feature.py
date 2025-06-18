@@ -47,7 +47,7 @@ def execute(request):
     )
 
 def is_request_feature_valid(request):
-    request["name"] is not None
+    return request["name"] != ''
 
 def is_request_table_valid(request):
     for table in request:
