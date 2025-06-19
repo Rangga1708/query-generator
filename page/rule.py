@@ -90,10 +90,10 @@ def update_feature(features, tables):
                label = lockey("rule_label_query_execute") ,
                value = table.query_execute
             ),
-            "columns": json.loads(st.text_area(
+            "columns": st.text_area(
                label = lockey("rule_label_columns"),
                value = json.dumps(table.columns, indent = 2)
-            )),
+            ),
             "updated_time": dt.now().strftime("%Y-%m-%d %H:%M:%S")
          })
 

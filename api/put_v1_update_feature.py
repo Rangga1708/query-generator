@@ -1,3 +1,4 @@
+import json
 from common_handling import set_lockey
 from common_handling import set_client
 from common_handling import response
@@ -30,7 +31,7 @@ def execute(request):
             data = {}
         )
     
-    for table in request["tables"]:
+    for table in request["tables"]:        
         try:
             client.table("tables").update(table).eq("id", table["id"]).execute()
         except:
@@ -51,13 +52,29 @@ def is_request_feature_valid(request):
 
 def is_request_table_valid(request):
     for table in request:
-        if ((table["table_name"] is None) or
-            (table["query_select"] is None) or
-            (table["query_execute"] is None)):
+        try:
+            table["columns"] = json.loads(table["columns"])
+        except:
+            print(1)
+            return False
+
+        if ((table["table_name"] == '') or
+            (table["query_select"] == '') or
+            (table["query_execute"] == '') or
+            (table["columns"] == [])):
+            print(2)
             return False
         
         for column in table["columns"]:
-            if (column["name"] is None) or (column["name"] == ""):
+            if (("name" not in column) or
+                ("lov" not in column)):
+                print(3)
+                return False
+            elif column["name"] == "":
+                print(4)
+                return False
+            elif type(column["lov"]) != type([]):
+                print(5)
                 return False
 
     return True
