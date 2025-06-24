@@ -5,6 +5,7 @@ from datetime import datetime as dt
 from common_handling import set_lockey
 from common_handling import find_config
 from common_handling import find_value_in_dataframe
+from common_handling import is_password_valid
 from api import put_v1_update_feature
 from api import post_v1_add_feature
 from api import post_v1_add_table_rule
@@ -13,6 +14,9 @@ lockey = set_lockey.execute
 config = find_config.execute
 
 def app():
+   if not is_password_valid.execute():
+        return {}
+
    features = pd.DataFrame(config("features"))
    tables = pd.DataFrame(config("tables"))
 

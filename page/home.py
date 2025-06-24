@@ -1,9 +1,13 @@
 import streamlit as st
 from common_handling import set_lockey
+from common_handling import is_password_valid
 
 lockey = set_lockey.execute
 
 def app():
+    if not is_password_valid.execute():
+        return {}
+
     st.title(lockey("home_title_welcome"))
 
     st.markdown(

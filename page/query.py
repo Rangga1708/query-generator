@@ -1,14 +1,18 @@
 import streamlit as st
 import pandas as pd
 import uuid
-import base64
-import streamlit.components.v1 as components
-from common_handling import set_lockey, find_config, find_value_in_dataframe
+from common_handling import set_lockey
+from common_handling import find_config
+from common_handling import find_value_in_dataframe
+from common_handling import is_password_valid
 
 lockey = set_lockey.execute
 config = find_config.execute
 
 def app():
+    if not is_password_valid.execute():
+        return {}
+    
     features = pd.DataFrame(config("features"))
     tables = pd.DataFrame(config("tables"))
 
