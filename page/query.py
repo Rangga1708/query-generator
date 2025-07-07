@@ -13,6 +13,10 @@ def app():
     if not is_password_valid.execute():
         return {}
     
+    if (config("features") == []) and (config("tables") == []):
+        st.error(lockey("common_error_empty_data"))
+        return {}
+    
     features = pd.DataFrame(config("features"))
     tables = pd.DataFrame(config("tables"))
 

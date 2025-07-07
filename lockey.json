@@ -8,6 +8,7 @@
   "title_login": "Login",
   "title_wrong_password_error": "Wrong password! Reinput your password!",
   "common_error_empty_password": "Your session is over. Please reload the screen to fill the password.",
+  "common_error_empty_data": "No feature found. Please add/import the feature rule first!",
   "home_title_welcome": "Welcome",
   "query_label_feature": "Select the feature:",
   "query_error_feature_not_exist": "Feature is not exist. Please chose another feature.",
