@@ -27,7 +27,6 @@ def execute(request):
     st.session_state.config["features"].append(request)
 
     st_javascript(f"""await localStorage.setItem("features", JSON.stringify({config("features")}));""")
-    print(st_javascript("""await localStorage.getItem("features");"""))
 
     return response.execute(
             status = "200",

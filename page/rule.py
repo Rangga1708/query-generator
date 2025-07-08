@@ -142,23 +142,97 @@ def update_feature(features, tables):
          else:
             st.error(response["message"])
 
-def add_new_feature(features):
-   with st.form(key = "Form New Feature", border = True):
-      request = {
-         "id": str(uuid.uuid4()),
-         "name": st.text_input(
-            label = lockey("rule_label_feature_name"),
-            placeholder = lockey("rule_placeholder_feature_name")),
-         "notes": st.text_area(label = lockey("rule_label_feature_notes"))
-      }
+# def add_new_feature(features):
+#    with st.form(key = "Form New Feature", border = True):
+#       request = {
+#          "id": str(uuid.uuid4()),
+#          "name": st.text_input(
+#             label = lockey("rule_label_feature_name"),
+#             placeholder = lockey("rule_placeholder_feature_name")),
+#          "notes": st.text_area(label = lockey("rule_label_feature_notes"))
+#       }
       
-      if st.form_submit_button(label = lockey("rule_button_submit_feature")):
-         response = post_v2_add_feature.execute(request)
+#       if st.form_submit_button(label = lockey("rule_button_submit_feature")):
+#          response = post_v2_add_feature.execute(request)
 
-         if response["status"] == "200":
-            st.success(response["message"])
-         else:
-            st.error(response["message"])
+#          if response["status"] == "200":
+#             st.success(response["message"])
+#          else:
+#             st.error(response["message"])
+
+def add_new_feature(features):
+   if "total_new_tables" not in st.session_state:
+      st.session_state.total_new_tables = 1
+   
+   if "new_tables" not in st.session_state:
+      st.session_state.new_tables = []
+   
+   if "feature_id" not in st.session_state:
+      st.session_state.feature_id = str(uuid.uuid4())
+
+   with st.form(key = "Form New Feature", border = False, clear_on_submit = False):
+      with st.container(border = True):
+         feature = {
+            "id": st.session_state.feature_id,
+            "name": st.text_input(
+               label = lockey("rule_label_feature_name"),
+               placeholder = lockey("rule_placeholder_feature_name")),
+            "notes": st.text_area(label = lockey("rule_label_feature_notes"))
+         }
+
+      for i in range (st.session_state.total_new_tables):
+         with st.container(border = True):
+            table_id = str(uuid.uuid4())
+            st.session_state.new_tables.append({
+               "id": table_id,
+               "feature_id": st.session_state.feature_id,
+               "table_name": st.text_input(label = lockey("rule_label_table_name"), key = f"table_name - {i}"),
+               "query_select": st.text_area(label = lockey("rule_label_query_select"), key = f"query_select - {i}"),
+               "query_execute": st.text_area(label = lockey("rule_label_query_execute"), key = f"query_execute - {i}"),
+               "columns": st.text_area(
+                  label = lockey("rule_label_columns"),
+                  value = json.dumps([
+                     {
+                        "lov":[],
+                        "name": ""
+                     }
+                  ],indent = 2),
+                  key = f"columns - {i}")
+            })
+
+      button_columns = st.columns(spec = 4, gap = "small")
+      
+      if st.session_state.total_new_tables == 1:
+         is_delete_button_disabled = True
+      else:
+         is_delete_button_disabled = False
+
+      with button_columns[0]:
+         if st.form_submit_button(label = lockey("rule_button_add_new_table"), use_container_width = True):
+            st.session_state.total_new_tables += 1
+            st.rerun()
+      
+      with button_columns[1]:
+         if st.form_submit_button(label = lockey("rule_button_delete_new_table"), use_container_width = True, disabled = is_delete_button_disabled):
+            st.session_state.total_new_tables -= 1
+            st.session_state.new_tables.pop()
+            st.rerun()
+      
+      with button_columns[2]:
+         if st.form_submit_button(label = lockey("rule_button_clear_input"), use_container_width = True, disabled = is_delete_button_disabled):
+            st.session_state.total_new_tables = 1
+            st.session_state.new_tables = []
+            st.rerun()
+
+      with button_columns[3]:
+         if st.form_submit_button(label = lockey("rule_button_submit_feature"), use_container_width = True, type = "primary"):
+            st.write("GOOD")
+      #    response = post_v2_add_feature.execute(request)
+
+      #    if response["status"] == "200":
+      #       st.success(response["message"])
+      #    else:
+      #       st.error(response["message"])
 
 def add_new_table_rule(features, tables):
    if (len(features) == 0):
@@ -207,3 +281,7 @@ def add_new_table_rule(features, tables):
             st.success(response["message"])
          else:
             st.error(response["message"])
+
+def delete_container(index):
+   st.session_state.new_tables_container.pop(index)
+   st.session_state.new_tables.pop(index)
