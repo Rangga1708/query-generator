@@ -22,7 +22,8 @@ def input_password():
                 st.toast(lockey("title_wrong_password_error"), icon = ":material/error:")
 
 def show_page():
-    st.session_state.config = get_v3_config.execute()['data']
+    if "config" not in st.session_state:
+        st.session_state.config = get_v3_config.execute()['data']
 
     st.markdown(
         """
@@ -73,7 +74,9 @@ def show_page():
 if __name__ == "__main__":
     st.set_page_config(page_title = "Query Generator", layout = "wide")
 
-    st.session_state.localization_key = get_v1_localization_key.execute()['data']
+    if "localization_key" not in st.session_state:
+        st.session_state.localization_key = get_v1_localization_key.execute()['data']
+    
     lockey = set_lockey.execute
     
     if "password" not in st.session_state:

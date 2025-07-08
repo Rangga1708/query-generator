@@ -1,13 +1,14 @@
+import json
+import uuid
 import streamlit as st
 import pandas as pd
-import json
 from datetime import datetime as dt
 from common_handling import set_lockey
 from common_handling import find_config
 from common_handling import find_value_in_dataframe
 from common_handling import is_password_valid
 from api import put_v1_update_feature
-from api import post_v1_add_feature
+from api import post_v2_add_feature
 from api import post_v1_add_table_rule
 
 lockey = set_lockey.execute
@@ -21,21 +22,46 @@ def app():
    tables = pd.DataFrame(config("tables"))
 
    tabs = st.tabs([
+      lockey("rule_title_check_feature"),
       lockey("rule_title_update_feature"),
       lockey("rule_title_insert_feature"),
       lockey("rule_title_insert_table")
    ])
 
    with tabs[0]:
-      update_feature(features, tables)
+      check_feature(features, tables)
 
    with tabs[1]:
+      update_feature(features, tables)
+
+   with tabs[2]:
       add_new_feature(features)
    
-   with tabs[2]:
+   with tabs[3]:
       add_new_table_rule(features, tables)
 
+def check_feature(features, tables):
+   if (len(features) == 0) and (len(tables) == 0):
+        st.error(lockey("common_error_empty_data"))
+        return {}
+   
+   st.write(lockey("rule_label_features_list"))
+   st.dataframe(
+      data = features[["name", "notes"]],
+      hide_index = True
+   )
+   
+   st.write(lockey("rule_label_tables_list"))
+   st.dataframe(
+      data = tables,
+      hide_index = True
+   )
+
 def update_feature(features, tables): 
+   if (len(features) == 0) and (len(tables) == 0):
+        st.error(lockey("common_error_empty_data"))
+        return {}
+   
    feature = st.selectbox(
       label = lockey("rule_label_feature"),
       options = features.sort_values(by = "name")["name"],
@@ -119,6 +145,7 @@ def update_feature(features, tables):
 def add_new_feature(features):
    with st.form(key = "Form New Feature", border = True):
       request = {
+         "id": str(uuid.uuid4()),
          "name": st.text_input(
             label = lockey("rule_label_feature_name"),
             placeholder = lockey("rule_placeholder_feature_name")),
@@ -126,7 +153,7 @@ def add_new_feature(features):
       }
       
       if st.form_submit_button(label = lockey("rule_button_submit_feature")):
-         response = post_v1_add_feature.execute(request)
+         response = post_v2_add_feature.execute(request)
 
          if response["status"] == "200":
             st.success(response["message"])
@@ -134,6 +161,10 @@ def add_new_feature(features):
             st.error(response["message"])
 
 def add_new_table_rule(features, tables):
+   if (len(features) == 0):
+        st.error(lockey("common_error_empty_data"))
+        return {}
+   
    feature = st.selectbox(
       label = lockey("rule_label_feature"),
       options = features.sort_values(by = "name")["name"],

@@ -13,12 +13,12 @@ def app():
     if not is_password_valid.execute():
         return {}
     
-    if (config("features") == []) and (config("tables") == []):
-        st.error(lockey("common_error_empty_data"))
-        return {}
-    
     features = pd.DataFrame(config("features"))
     tables = pd.DataFrame(config("tables"))
+
+    if (len(features) == 0) and (len(tables) == 0):
+        st.error(lockey("common_error_empty_data"))
+        return {}
 
     feature = st.selectbox(
         label = lockey("query_label_feature"),
