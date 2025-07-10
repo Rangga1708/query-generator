@@ -3,7 +3,6 @@ import hashlib
 from streamlit_option_menu import option_menu
 from page import home, query, rule
 from api import get_v1_localization_key
-from api import get_v3_config
 from common_handling import set_lockey
 
 def input_password():
@@ -22,24 +21,6 @@ def input_password():
                 st.toast(lockey("title_wrong_password_error"), icon = ":material/error:")
 
 def show_page():
-    # if "config" not in st.session_state:
-    #     st.session_state.config = get_v3_config.execute()['data']
-
-    # st.markdown(
-    #     """
-    #     <style>
-    #         .block-container {
-    #             padding-top: 1rem;
-    #         }
-    #         header {
-    #             height: 0px;
-    #             visibility: hidden;
-    #         }
-    #     </style>
-    #     """,
-    #     unsafe_allow_html = True
-    # )
-
     apps = [
         {"func": home.app, "title": lockey("title_home"), "icon": "house"},
         {"func": query.app, "title": lockey("title_query"), "icon": "database"},
