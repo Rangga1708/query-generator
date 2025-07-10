@@ -1,13 +1,13 @@
 import json
+import uuid
 import streamlit as st
 import pandas as pd
-from datetime import datetime as dt
 from common_handling import set_lockey
 from common_handling import find_config
 from common_handling import find_value_in_dataframe
 from common_handling import is_password_valid
 from common_handling import is_config_exist
-from api import put_v1_update_feature
+from api import put_v2_update_feature
 from api import post_v2_add_feature
 
 lockey = set_lockey.execute
@@ -33,6 +33,9 @@ def app():
       update_feature()
 
 def import_feature():
+   if "show_import_success" not in st.session_state:
+      st.session_state.show_import_success = False
+
    file = st.file_uploader(
       label = lockey("rule_label_import_feature"),
       type = "json"
@@ -68,7 +71,8 @@ def import_feature():
 
       if save_button:
          st.session_state.config = file
-         st.success(lockey("rule_label_feature_import_success"))
+         st.session_state.show_import_success = True
+         st.rerun()
    
    else:
       if is_config_exist.execute():
@@ -97,6 +101,10 @@ def import_feature():
             mime="text/plain",
             type = "primary"
          )
+   
+   if st.session_state.show_import_success:
+      st.success(lockey("rule_label_feature_import_success"))
+      st.session_state.show_import_success = False
    
 def add_new_feature():
    if "new_tables" not in st.session_state:
@@ -129,10 +137,10 @@ def add_new_feature():
                   label = lockey("rule_label_query_execute"),
                   value = st.session_state.new_tables[i]["query_execute"],
                   key = f"query_execute - {i}"),
-               "columns": st.text_area(
+               "columns": json.loads(st.text_area(
                   label = lockey("rule_label_columns"),
-                  value = st.session_state.new_tables[i]["columns"],
-                  key = f"columns - {i}")
+                  value = json.dumps(st.session_state.new_tables[i]["columns"], indent = 2),
+                  key = f"columns - {i}"))
             }
 
       button_columns = st.columns(spec = 4, gap = "small")
@@ -154,7 +162,6 @@ def add_new_feature():
       
       with button_columns[2]:
          if st.form_submit_button(label = lockey("rule_button_clear_input"), use_container_width = True, disabled = is_delete_button_disabled):
-            st.session_state.total_new_tables = 1
             st.session_state.new_tables = [new_table()]
             st.rerun()
 
@@ -177,23 +184,22 @@ def add_new_feature():
          st.error(st.session_state.response_post_add_feature["message"])
          st.session_state.response_post_add_feature = None
 
-def update_feature(): 
+def update_feature():
    if not is_config_exist.execute():
       return {}
 
+   if "update_feature_name" not in st.session_state:
+      st.session_state.update_feature_name = ""
+   
    features = pd.DataFrame(config("features"))
    tables = pd.DataFrame(config("tables"))
-
-   if (len(features) == 0) and (len(tables) == 0):
-        st.error(lockey("common_error_empty_data"))
-        return {}
    
    feature = st.selectbox(
       label = lockey("rule_label_feature"),
       options = features.sort_values(by = "name")["name"],
       index = None,
       key = "update_feature"
-      )
+   )
 
    if feature is None:
       return {}
@@ -202,71 +208,98 @@ def update_feature():
       return {}
 
    feature_info = find_value_in_dataframe.execute(
-         data = features,
-         search_value = feature,
-         reference_column = "name"
-      ).iloc[0]
+      data = features,
+      search_value = feature,
+      reference_column = "name"
+   ).iloc[0]
 
-   with st.form(key = "Update Feature", border = True):
-      feature_info_updated = {
-         "id": feature_info["id"],
-         "name": st.text_input(
-            label = lockey("rule_label_feature_name"),
-            value = feature_info["name"]
-         ),
-         "notes": st.text_area(
-            label = lockey("rule_label_feature_notes"),
-            value = feature_info["notes"]
-         ),
-         "updated_time": dt.now().strftime("%Y-%m-%d %H:%M:%S")
-      }
+   if feature != st.session_state.update_feature_name:
+      st.session_state.update_feature_name = feature
+      st.session_state.update_tables = find_value_in_dataframe.execute(
+         data = tables,
+         search_value = feature_info["id"],
+         reference_column = "feature_id"
+      ).to_dict(orient = "records")
+   
+   if "response_put_update_feature" not in st.session_state:
+      st.session_state.response_put_update_feature = None
 
-      st.divider()
-
-      feature_tables = find_value_in_dataframe.execute(
-            data = tables,
-            search_value = feature_info["id"],
-            reference_column = "feature_id"
-         )
-      
-      feature_tables_updated = []
-      for table in feature_tables.itertuples(index=True):
-         feature_tables_updated.append({
-            "id": table.id,
-            "feature_id": feature_info["id"],
-            "table_name": st.text_input(
-               label = lockey("rule_label_table_name"),
-               value = table.table_name
-            ),
-            "query_select": st.text_area(
-               label = lockey("rule_label_query_select"),
-               value = table.query_select
-            ),
-            "query_execute": st.text_area(
-               label = lockey("rule_label_query_execute") ,
-               value = table.query_execute
-            ),
-            "columns": st.text_area(
-               label = lockey("rule_label_columns"),
-               value = json.dumps(table.columns, indent = 2)
-            ),
-            "updated_time": dt.now().strftime("%Y-%m-%d %H:%M:%S")
-         })
-
-         st.divider()
-
-      if st.form_submit_button(label = lockey("rule_button_update_feature")):
-         request = {
-            "feature": feature_info_updated,
-            "tables": feature_tables_updated
+   with st.form(key = "Form Update Feature", border = False, clear_on_submit = False):
+      with st.container(border = True):
+         feature = {
+            "id": feature_info["id"],
+            "name": st.text_input(
+               label = lockey("rule_label_feature_name"),
+               placeholder = lockey("rule_placeholder_feature_name"),
+               value = feature_info["name"]),
+            "notes": st.text_area(
+               label = lockey("rule_label_feature_notes",),
+               value = feature_info["notes"])
          }
 
-         response = put_v1_update_feature.execute(request)
+      for i in range (len(st.session_state.update_tables)):
+         with st.container(border = True):
+            st.session_state.update_tables[i] = {
+               "id": st.session_state.update_tables[i]["id"],
+               "feature_id": st.session_state.update_tables[i]["feature_id"],
+               "table_name": st.text_input(
+                  label = lockey("rule_label_table_name"),
+                  value = st.session_state.update_tables[i]["table_name"],
+                  key = f"table_name_update - {i}"),
+               "query_select": st.text_area(
+                  label = lockey("rule_label_query_select"),
+                  value = st.session_state.update_tables[i]["query_select"],
+                  key = f"query_select_update - {i}"),
+               "query_execute": st.text_area(
+                  label = lockey("rule_label_query_execute"),
+                  value = st.session_state.update_tables[i]["query_execute"],
+                  key = f"query_execute_update - {i}"),
+               "columns": json.loads(st.text_area(
+                  label = lockey("rule_label_columns"),
+                  value = json.dumps(st.session_state.update_tables[i]["columns"], indent = 2),
+                  key = f"columns_update - {i}"))
+            }
 
-         if response["status"] == "200":
-            st.success(response["message"])
-         else:
-            st.error(response["message"])
+      button_columns = st.columns(spec = 4, gap = "small")
+      
+      if len(st.session_state.update_tables) == 1:
+         is_delete_button_disabled = True
+      else:
+         is_delete_button_disabled = False
+
+      with button_columns[0]:
+         if st.form_submit_button(label = lockey("rule_button_add_new_table"), use_container_width = True):
+            st.session_state.update_tables.append(new_table(feature_info["id"]))
+            st.rerun()
+      
+      with button_columns[1]:
+         if st.form_submit_button(label = lockey("rule_button_delete_new_table"), use_container_width = True, disabled = is_delete_button_disabled):
+            st.session_state.update_tables.pop()
+            st.rerun()
+      
+      with button_columns[2]:
+         if st.form_submit_button(label = lockey("rule_button_clear_input"), use_container_width = True, disabled = is_delete_button_disabled):
+            st.session_state.update_tables = [new_table(feature_info["id"])]
+            st.rerun()
+
+      with button_columns[3]:
+         if st.form_submit_button(label = lockey("rule_button_submit_feature"), use_container_width = True, type = "primary"):
+            request = {
+               "feature": feature,
+               "tables": st.session_state.update_tables
+            }
+
+            st.session_state.response_put_update_feature = put_v2_update_feature.execute(request)
+            st.rerun()
+
+   if st.session_state.response_put_update_feature != None:
+      if st.session_state.response_put_update_feature["status"] == "200":
+         st.success(st.session_state.response_put_update_feature["message"])
+         del st.session_state.new_tables
+         st.session_state.response_put_update_feature = None
+      else:
+         st.error(st.session_state.response_put_update_feature["message"])
+         st.session_state.response_put_update_feature = None
 
 def is_file_valid(file):
    if ("features" not in file) or ("tables" not in file):
@@ -280,15 +313,45 @@ def is_file_valid(file):
             
    return True
 
-def new_table():
-   return {
+def new_table(feature_id = None):
+   if feature_id == None:
+      return {
+         "table_name": "",
+         "query_select": "",
+         "query_execute": "",
+         "columns": [
+                     {
+                        "lov":[],
+                        "name": ""
+                     }
+                  ]
+      }
+   else:
+      return {
+      "id": str(uuid.uuid4()),
+      "feature_id": feature_id,
       "table_name": "",
       "query_select": "",
       "query_execute": "",
-      "columns": json.dumps([
+      "columns": [
                   {
                      "lov":[],
                      "name": ""
                   }
-               ],indent = 2)
+               ]
+   }
+
+def new_update_table(feature_id):
+   return {
+      "id": str(uuid.uuid4()),
+      "feature_id": feature_id,
+      "table_name": "",
+      "query_select": "",
+      "query_execute": "",
+      "columns": [
+                  {
+                     "lov":[],
+                     "name": ""
+                  }
+               ]
    }

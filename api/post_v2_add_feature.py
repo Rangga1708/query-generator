@@ -50,16 +50,10 @@ def execute(request):
         )
     
 def is_request_valid(request):
-    print(request)
     if request["feature"]["name"] == '':
         return False
     
     for table in request["tables"]:    
-        try:
-            table["columns"] = json.loads(table["columns"])
-        except:
-            return False
-
         if ((table["table_name"] == '') or
             (table["query_select"] == '') or
             (table["query_execute"] == '') or
