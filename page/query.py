@@ -5,6 +5,7 @@ from common_handling import set_lockey
 from common_handling import find_config
 from common_handling import find_value_in_dataframe
 from common_handling import is_password_valid
+from common_handling import is_config_exist
 
 lockey = set_lockey.execute
 config = find_config.execute
@@ -13,12 +14,11 @@ def app():
     if not is_password_valid.execute():
         return {}
     
+    if not is_config_exist.execute():
+        return {}
+    
     features = pd.DataFrame(config("features"))
     tables = pd.DataFrame(config("tables"))
-
-    if (len(features) == 0) and (len(tables) == 0):
-        st.error(lockey("common_error_empty_data"))
-        return {}
 
     feature = st.selectbox(
         label = lockey("query_label_feature"),

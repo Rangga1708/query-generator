@@ -14,7 +14,7 @@ def input_password():
         )
 
         if st.form_submit_button(label = lockey("title_login")):
-            password = hashlib.sha256(password.encode()).hexdigest()
+            password = eval(st.secrets["ENCODE"])
             if password == st.secrets["PASSWORD"]:
                 st.session_state.password = password
                 st.rerun()
@@ -22,23 +22,23 @@ def input_password():
                 st.toast(lockey("title_wrong_password_error"), icon = ":material/error:")
 
 def show_page():
-    if "config" not in st.session_state:
-        st.session_state.config = get_v3_config.execute()['data']
+    # if "config" not in st.session_state:
+    #     st.session_state.config = get_v3_config.execute()['data']
 
-    st.markdown(
-        """
-        <style>
-            .block-container {
-                padding-top: 1rem;
-            }
-            header {
-                height: 0px;
-                visibility: hidden;
-            }
-        </style>
-        """,
-        unsafe_allow_html = True
-    )
+    # st.markdown(
+    #     """
+    #     <style>
+    #         .block-container {
+    #             padding-top: 1rem;
+    #         }
+    #         header {
+    #             height: 0px;
+    #             visibility: hidden;
+    #         }
+    #     </style>
+    #     """,
+    #     unsafe_allow_html = True
+    # )
 
     apps = [
         {"func": home.app, "title": lockey("title_home"), "icon": "house"},

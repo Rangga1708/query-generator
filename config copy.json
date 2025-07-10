@@ -1,0 +1,47 @@
+{
+  "features": 123,
+  "tables":
+  [
+    {
+      "id": "0d2c4640-d520-45d2-b475-bfffac793259",
+      "feature_id": "vidcall-1",
+      "table_name": "user_profile.blacklisted_user",
+      "query_select": "SELECT * FROM user_profile.blacklisted_user WHERE blacklist_value IN ({Blacklist Value});",
+      "query_execute": "MERGE INTO USER_PROFILE.BLACKLISTED_USER tgt\nUSING (SELECT\n  '{uuid}' AS blacklisted_id,\n  '{Blacklist Type}' AS blacklist_type,\n  '{Blacklist Value}' AS blacklist_value,\n  {Status} AS is_deleted,\n  'SYSTEM' AS created_by,\n  SYSDATE AS created_time,\n  'SYSTEM' AS updated_by,\n  SYSDATE AS updated_time\n  FROM DUAL) src\nON (tgt.blacklist_type = src.blacklist_type AND tgt.blacklist_value = src.blacklist_value)\nWHEN MATCHED THEN UPDATE SET\n  tgt.blacklisted_id = src.blacklisted_id,\n  tgt.is_deleted = src.is_deleted,\n  tgt.updated_by = src.updated_by,\n  tgt.updated_time = src.updated_time\nWHEN NOT MATCHED THEN INSERT (blacklisted_id, blacklist_type, blacklist_value, is_deleted, created_by, created_time, updated_by, updated_time)\nVALUES (src.blacklisted_id, src.blacklist_type, src.blacklist_value, src.is_deleted, src.created_by, src.created_time, src.updated_by, src.updated_time);",
+      "columns": 
+      [
+        {
+          "name": "Blacklist Type",
+          "lov": ["device-type", "phone-number", "nik"]
+        },
+        {
+          "name": "Blacklist Value",
+          "lov": []
+        },
+        {
+          "name": "Status",
+          "lov": ["0", "1"]
+        }
+      ]
+    },
+    {
+      "id": "ac89b91e-2509-4121-9af3-9b997c940004",
+      "feature_id": "ntb-1",
+      "table_name": "provisioning.config",
+      "query_select": "SELECT * FROM provisioning.config WHERE parameter_key = 'eligible.stp.setting';",
+      "query_execute": "UPDATE provisioning.config SET parameter_value = {Parameter Value} WHERE parameter_key = 'eligible.stp.setting';",
+      "columns": 
+      [
+        {
+          "name": "Parameter Key",
+          "lov": ["eligible.stp.setting"]
+        },
+        {
+          "name": "Parameter Value",
+          "lov": []
+        }
+      ]
+    }
+  ]
+}
+
