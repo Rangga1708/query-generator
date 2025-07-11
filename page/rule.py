@@ -124,24 +124,30 @@ def add_new_feature():
 
       for i in range (len(st.session_state.new_tables)):
          with st.container(border = True):
-            st.session_state.new_tables[i] = {
-               "table_name": st.text_input(
-                  label = lockey("rule_label_table_name"),
-                  value = st.session_state.new_tables[i]["table_name"],
-                  key = f"table_name - {i}"),
-               "query_select": st.text_area(
-                  label = lockey("rule_label_query_select"),
-                  value = st.session_state.new_tables[i]["query_select"],
-                  key = f"query_select - {i}"),
-               "query_execute": st.text_area(
-                  label = lockey("rule_label_query_execute"),
-                  value = st.session_state.new_tables[i]["query_execute"],
-                  key = f"query_execute - {i}"),
-               "columns": json.loads(st.text_area(
-                  label = lockey("rule_label_columns"),
-                  value = json.dumps(st.session_state.new_tables[i]["columns"], indent = 2),
-                  key = f"columns - {i}"))
-            }
+            try:
+               st.session_state.new_tables[i] = {
+                  "table_name": st.text_input(
+                     label = lockey("rule_label_table_name"),
+                     value = st.session_state.new_tables[i]["table_name"],
+                     key = f"table_name - {i}"),
+                  "query_select": st.text_area(
+                     label = lockey("rule_label_query_select"),
+                     value = st.session_state.new_tables[i]["query_select"],
+                     key = f"query_select - {i}"),
+                  "query_execute": st.text_area(
+                     label = lockey("rule_label_query_execute"),
+                     value = st.session_state.new_tables[i]["query_execute"],
+                     key = f"query_execute - {i}"),
+                  "columns": json.loads(st.text_area(
+                     label = lockey("rule_label_columns"),
+                     value = json.dumps(st.session_state.new_tables[i]["columns"], indent = 2),
+                     key = f"columns - {i}"))
+               }
+            except:
+               st.session_state.response_post_add_feature = {
+                  "status": "30001",
+                  "message": lockey("rule_label_invalid_input")
+               }
 
       button_columns = st.columns(spec = 4, gap = "small")
       
@@ -239,26 +245,32 @@ def update_feature():
 
       for i in range (len(st.session_state.update_tables)):
          with st.container(border = True):
-            st.session_state.update_tables[i] = {
-               "id": st.session_state.update_tables[i]["id"],
-               "feature_id": st.session_state.update_tables[i]["feature_id"],
-               "table_name": st.text_input(
-                  label = lockey("rule_label_table_name"),
-                  value = st.session_state.update_tables[i]["table_name"],
-                  key = f"table_name_update - {i}"),
-               "query_select": st.text_area(
-                  label = lockey("rule_label_query_select"),
-                  value = st.session_state.update_tables[i]["query_select"],
-                  key = f"query_select_update - {i}"),
-               "query_execute": st.text_area(
-                  label = lockey("rule_label_query_execute"),
-                  value = st.session_state.update_tables[i]["query_execute"],
-                  key = f"query_execute_update - {i}"),
-               "columns": json.loads(st.text_area(
-                  label = lockey("rule_label_columns"),
-                  value = json.dumps(st.session_state.update_tables[i]["columns"], indent = 2),
-                  key = f"columns_update - {i}"))
-            }
+            try:
+               st.session_state.update_tables[i] = {
+                  "id": st.session_state.update_tables[i]["id"],
+                  "feature_id": st.session_state.update_tables[i]["feature_id"],
+                  "table_name": st.text_input(
+                     label = lockey("rule_label_table_name"),
+                     value = st.session_state.update_tables[i]["table_name"],
+                     key = f"table_name_update - {i}"),
+                  "query_select": st.text_area(
+                     label = lockey("rule_label_query_select"),
+                     value = st.session_state.update_tables[i]["query_select"],
+                     key = f"query_select_update - {i}"),
+                  "query_execute": st.text_area(
+                     label = lockey("rule_label_query_execute"),
+                     value = st.session_state.update_tables[i]["query_execute"],
+                     key = f"query_execute_update - {i}"),
+                  "columns": json.loads(st.text_area(
+                     label = lockey("rule_label_columns"),
+                     value = json.dumps(st.session_state.update_tables[i]["columns"], indent = 2),
+                     key = f"columns_update - {i}"))
+               }
+            except:
+               st.session_state.response_put_update_feature = {
+                  "status": "30001",
+                  "message": lockey("rule_label_invalid_input")
+               }
 
       button_columns = st.columns(spec = 4, gap = "small")
       
