@@ -22,7 +22,7 @@ def app():
 
     feature = st.selectbox(
         label = lockey("query_label_feature"),
-        options = features["name"],
+        options = features["name"].sort_values(),
         index = None
         )
     
