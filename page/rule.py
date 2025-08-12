@@ -1,5 +1,6 @@
 import json
 import uuid
+import copy
 import streamlit as st
 import pandas as pd
 from common_handling import set_lockey
@@ -8,7 +9,7 @@ from common_handling import find_value_in_dataframe
 from common_handling import is_password_valid
 from common_handling import is_config_exist
 from api import put_v2_update_feature
-from api import post_v2_add_feature
+from api import post_v3_add_feature
 
 lockey = set_lockey.execute
 config = find_config.execute
@@ -20,7 +21,8 @@ def app():
    tabs = st.tabs([
       lockey("rule_title_import_feature"),
       lockey("rule_title_insert_feature"),
-      lockey("rule_title_update_feature")
+      lockey("rule_title_update_feature"),
+      "tes"
    ])
 
    with tabs[0]:
@@ -31,6 +33,29 @@ def app():
 
    with tabs[2]:
       update_feature()
+
+   with tabs[3]:
+      data = [
+         {
+            "name": "Rangga",
+            "id": "123"
+         },
+         {
+            "name": "Oding",
+            "id": "456"
+         }
+      ]
+      df = pd.DataFrame(data)
+      st.write(df)
+      st.write(df.to_dict(orient = "records"))
+      download = json.dumps({"tes": df.to_dict(orient = "records")})
+      st.download_button(
+            label = "Download",
+            data = download,
+            file_name = "tes.json",
+            mime="text/plain",
+            type = "primary"
+         )
 
 def import_feature():
    if "show_import_success" not in st.session_state:
@@ -125,24 +150,24 @@ def add_new_feature():
       for i in range (len(st.session_state.new_tables)):
          with st.container(border = True):
             try:
-               st.session_state.new_tables[i] = {
-                  "table_name": st.text_input(
+               st.session_state.new_tables[i]["table_name"] = st.text_input(
                      label = lockey("rule_label_table_name"),
                      value = st.session_state.new_tables[i]["table_name"],
-                     key = f"table_name - {i}"),
-                  "query_select": st.text_area(
+                     key = f"table_name - {i}")
+               st.session_state.new_tables[i]["query_select"] = st.text_area(
                      label = lockey("rule_label_query_select"),
                      value = st.session_state.new_tables[i]["query_select"],
-                     key = f"query_select - {i}"),
-                  "query_execute": st.text_area(
+                     key = f"query_select - {i}")
+               st.session_state.new_tables[i]["query_execute"] = st.text_area(
                      label = lockey("rule_label_query_execute"),
                      value = st.session_state.new_tables[i]["query_execute"],
-                     key = f"query_execute - {i}"),
-                  "columns": json.loads(st.text_area(
-                     label = lockey("rule_label_columns"),
-                     value = json.dumps(st.session_state.new_tables[i]["columns"], indent = 2),
-                     key = f"columns - {i}"))
-               }
+                     key = f"query_execute - {i}")
+               st.write(lockey("rule_label_columns"))
+               st.session_state.new_tables[i]["columns"] = st.data_editor(
+                     data = st.session_state.new_tables[i]["columns"],
+                     column_config = column_config(),
+                     num_rows = "dynamic",
+                     key = f"columns - {i}")
             except:
                st.session_state.response_post_add_feature = {
                   "status": "30001",
@@ -175,10 +200,10 @@ def add_new_feature():
          if st.form_submit_button(label = lockey("rule_button_submit_feature"), use_container_width = True, type = "primary"):
             request = {
                "feature": feature,
-               "tables": st.session_state.new_tables
+               "tables": copy.deepcopy(st.session_state.new_tables)
             }
 
-            st.session_state.response_post_add_feature = post_v2_add_feature.execute(request)
+            st.session_state.response_post_add_feature = post_v3_add_feature.execute(request)
             st.rerun()
 
    if st.session_state.response_post_add_feature != None:
@@ -331,39 +356,40 @@ def new_table(feature_id = None):
          "table_name": "",
          "query_select": "",
          "query_execute": "",
-         "columns": [
-                     {
-                        "lov":[],
-                        "name": ""
-                     }
-                  ]
+         "columns": [{
+            "name": None,
+            "lov": None,
+            "is_required": True
+            }]
       }
    else:
       return {
-      "id": str(uuid.uuid4()),
-      "feature_id": feature_id,
-      "table_name": "",
-      "query_select": "",
-      "query_execute": "",
-      "columns": [
-                  {
-                     "lov":[],
-                     "name": ""
-                  }
-               ]
-   }
+         "id": str(uuid.uuid4()),
+         "feature_id": feature_id,
+         "table_name": "",
+         "query_select": "",
+         "query_execute": "",
+         "columns": [{
+            "name": None,
+            "lov": None,
+            "is_required": True
+            }]
+      }
 
-def new_update_table(feature_id):
+def column_config():
    return {
-      "id": str(uuid.uuid4()),
-      "feature_id": feature_id,
-      "table_name": "",
-      "query_select": "",
-      "query_execute": "",
-      "columns": [
-                  {
-                     "lov":[],
-                     "name": ""
-                  }
-               ]
+      "name": st.column_config.TextColumn(
+            label = lockey("rule_label_column_name"),
+            required = True
+            ),
+      "lov": st.column_config.TextColumn(
+            label = lockey("rule_label_lov"),
+            required = False,
+            help = lockey("rule_label_lov_tooltip")
+            ),
+      "is_required": st.column_config.CheckboxColumn(
+            label = lockey("rule_label_is_required"),
+            required = True,
+            default = True
+            )
    }

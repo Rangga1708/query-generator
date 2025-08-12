@@ -48,5 +48,9 @@
   "rule_label_table_rule_already_exist": "Table rule already existed!",
   "rule_button_add_new_table": "Add new table",
   "rule_button_delete_new_table": "Delete last table",
-  "rule_button_clear_input": "Clear all"
+  "rule_button_clear_input": "Clear all",
+  "rule_label_column_name": "Column Name",
+  "rule_label_lov": "List of Values",
+  "rule_label_is_required": "Is Column Must Be Filled?",
+  "rule_label_lov_tooltip": "Separated by pipe (|)"
 }
