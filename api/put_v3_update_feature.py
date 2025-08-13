@@ -63,5 +63,9 @@ def is_request_valid(request):
             (table["query_execute"] == '') or
             (len(table["columns"]) == 0)):
             return False
+        
+        for column in table["columns"]:
+            if column["name"] == None:
+                return False
             
     return True
