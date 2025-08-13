@@ -49,8 +49,6 @@ def execute(request):
             else:
                 table["columns"][i]["lov"] = []
 
-        # table["columns"] = [{**column, "lov": column["lov"].split("|") if column["lov"] != None} for column in table["columns"]]
-        # table["columns"] = json.dumps(table["columns"].to_dict(orient = "records"), indent = 2)
         st.session_state.config["tables"].append(table)
 
     return response.execute(

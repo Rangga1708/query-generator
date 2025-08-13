@@ -8,7 +8,7 @@ from common_handling import find_config
 from common_handling import find_value_in_dataframe
 from common_handling import is_password_valid
 from common_handling import is_config_exist
-from api import put_v2_update_feature
+from api import put_v3_update_feature
 from api import post_v3_add_feature
 
 lockey = set_lockey.execute
@@ -251,6 +251,14 @@ def update_feature():
          search_value = feature_info["id"],
          reference_column = "feature_id"
       ).to_dict(orient = "records")
+
+      # Convert lov from list into string split by pipe
+      for table in st.session_state.update_tables:
+         for i in range(len(table["columns"])):
+            if len(table["columns"][i]["lov"]) != 0:
+               table["columns"][i]["lov"] = "|".join(table["columns"][i]["lov"])
+            else:
+               table["columns"][i]["lov"] = None
    
    if "response_put_update_feature" not in st.session_state:
       st.session_state.response_put_update_feature = None
@@ -271,26 +279,24 @@ def update_feature():
       for i in range (len(st.session_state.update_tables)):
          with st.container(border = True):
             try:
-               st.session_state.update_tables[i] = {
-                  "id": st.session_state.update_tables[i]["id"],
-                  "feature_id": st.session_state.update_tables[i]["feature_id"],
-                  "table_name": st.text_input(
+               st.session_state.update_tables[i]["table_name"] = st.text_input(
                      label = lockey("rule_label_table_name"),
                      value = st.session_state.update_tables[i]["table_name"],
-                     key = f"table_name_update - {i}"),
-                  "query_select": st.text_area(
+                     key = f"table_name_update - {i}")
+               st.session_state.update_tables[i]["query_select"] = st.text_area(
                      label = lockey("rule_label_query_select"),
                      value = st.session_state.update_tables[i]["query_select"],
-                     key = f"query_select_update - {i}"),
-                  "query_execute": st.text_area(
+                     key = f"query_select_update - {i}")
+               st.session_state.update_tables[i]["query_execute"] = st.text_area(
                      label = lockey("rule_label_query_execute"),
                      value = st.session_state.update_tables[i]["query_execute"],
-                     key = f"query_execute_update - {i}"),
-                  "columns": json.loads(st.text_area(
-                     label = lockey("rule_label_columns"),
-                     value = json.dumps(st.session_state.update_tables[i]["columns"], indent = 2),
-                     key = f"columns_update - {i}"))
-               }
+                     key = f"query_execute_update - {i}")
+               st.write(lockey("rule_label_columns"))
+               st.session_state.update_tables[i]["columns"] = st.data_editor(
+                     data = st.session_state.update_tables[i]["columns"],
+                     column_config = column_config(),
+                     num_rows = "dynamic",
+                     key = f"columns_update - {i}")
             except:
                st.session_state.response_put_update_feature = {
                   "status": "30001",
@@ -323,10 +329,10 @@ def update_feature():
          if st.form_submit_button(label = lockey("rule_button_submit_feature"), use_container_width = True, type = "primary"):
             request = {
                "feature": feature,
-               "tables": st.session_state.update_tables
+               "tables": copy.deepcopy(st.session_state.update_tables)
             }
 
-            st.session_state.response_put_update_feature = put_v2_update_feature.execute(request)
+            st.session_state.response_put_update_feature = put_v3_update_feature.execute(request)
             st.rerun()
 
    if st.session_state.response_put_update_feature != None:
