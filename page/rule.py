@@ -21,8 +21,7 @@ def app():
    tabs = st.tabs([
       lockey("rule_title_import_feature"),
       lockey("rule_title_insert_feature"),
-      lockey("rule_title_update_feature"),
-      "tes"
+      lockey("rule_title_update_feature")
    ])
 
    with tabs[0]:
@@ -33,29 +32,6 @@ def app():
 
    with tabs[2]:
       update_feature()
-
-   with tabs[3]:
-      data = [
-         {
-            "name": "Rangga",
-            "id": "123"
-         },
-         {
-            "name": "Oding",
-            "id": "456"
-         }
-      ]
-      df = pd.DataFrame(data)
-      st.write(df)
-      st.write(df.to_dict(orient = "records"))
-      download = json.dumps({"tes": df.to_dict(orient = "records")})
-      st.download_button(
-            label = "Download",
-            data = download,
-            file_name = "tes.json",
-            mime="text/plain",
-            type = "primary"
-         )
 
 def import_feature():
    if "show_import_success" not in st.session_state:

@@ -39,7 +39,6 @@ def execute(request):
         st.session_state.config["features"].append(request["feature"])
     
     for table in request["tables"]:
-        st.write(table)
         table["id"] = str(uuid.uuid4())
         table["feature_id"] = feature_id
         
