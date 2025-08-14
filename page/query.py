@@ -76,10 +76,6 @@ def execute_feature(features, tables, feature_id, feature_name):
             column_config = columns["column_config"].tolist()
             
             default_values = [None for column in columns_name]
-            # data = pd.DataFrame(
-            #     columns = columns_name,
-            #     dtype = "object"
-            # )
             data = [dict(zip(columns_name, default_values))]
             column_config = dict(zip(columns_name, column_config))
 
@@ -111,7 +107,8 @@ def execute_feature(features, tables, feature_id, feature_name):
             st.session_state.data_configs[f"data-{table.id}"]["preview"] = st.text_area(
                 label = lockey("query_label_preview"),
                 value = st.session_state.data_configs[f"data-{table.id}"]["preview"],
-                disabled = is_download_button_disabled
+                disabled = is_download_button_disabled,
+                height = 200
             )
 
             # Create buttpn columns

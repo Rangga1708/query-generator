@@ -120,7 +120,9 @@ def add_new_feature():
             "name": st.text_input(
                label = lockey("rule_label_feature_name"),
                placeholder = lockey("rule_placeholder_feature_name")),
-            "notes": st.text_area(label = lockey("rule_label_feature_notes"))
+            "notes": st.text_area(
+               label = lockey("rule_label_feature_notes"),
+               height = 100)
          }
 
       for i in range (len(st.session_state.new_tables)):
@@ -133,10 +135,12 @@ def add_new_feature():
                st.session_state.new_tables[i]["query_select"] = st.text_area(
                      label = lockey("rule_label_query_select"),
                      value = st.session_state.new_tables[i]["query_select"],
+                     height = 100,
                      key = f"query_select - {i}")
                st.session_state.new_tables[i]["query_execute"] = st.text_area(
                      label = lockey("rule_label_query_execute"),
                      value = st.session_state.new_tables[i]["query_execute"],
+                     height = 200,
                      key = f"query_execute - {i}")
                st.write(lockey("rule_label_columns"))
                st.session_state.new_tables[i]["columns"] = st.data_editor(
@@ -262,10 +266,12 @@ def update_feature():
                st.session_state.update_tables[i]["query_select"] = st.text_area(
                      label = lockey("rule_label_query_select"),
                      value = st.session_state.update_tables[i]["query_select"],
+                     height = 100,
                      key = f"query_select_update - {i}")
                st.session_state.update_tables[i]["query_execute"] = st.text_area(
                      label = lockey("rule_label_query_execute"),
                      value = st.session_state.update_tables[i]["query_execute"],
+                     height = 200,
                      key = f"query_execute_update - {i}")
                st.write(lockey("rule_label_columns"))
                st.session_state.update_tables[i]["columns"] = st.data_editor(
