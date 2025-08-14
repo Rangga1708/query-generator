@@ -86,6 +86,9 @@ def execute_feature(features, tables, feature_id, feature_name):
             }
     
     for table in tables_to_be_executed.itertuples(index=True):
+        if f"invalid_input_table-{table.id}" not in st.session_state:
+            st.session_state[f"invalid_input_table-{table.id}"] = False
+        
         with st.form(key = "form-" + table.id, clear_on_submit = False):
             # Show tables
             st.write(lockey("query_label_table_name") + table.table_name)
@@ -120,6 +123,11 @@ def execute_feature(features, tables, feature_id, feature_name):
                     # Convert data into data frame
                     data = pd.DataFrame(st.session_state.data_configs[f"data-{table.id}"]["data"])
 
+                    # Check if input is invalid
+                    if not is_input_valid(data, st.session_state.data_configs[f"data-{table.id}"]["column_config"]):
+                        st.session_state[f"invalid_input_table-{table.id}"] = True
+                        st.rerun()
+
                     st.session_state.data_configs[f"data-{table.id}"]["preview"] = generate_query(
                         data = data,
                         columns_name = data.columns,
@@ -135,6 +143,12 @@ def execute_feature(features, tables, feature_id, feature_name):
                         query = st.session_state.data_configs[f"data-{table.id}"]["preview"],
                         filename = feature_name + " - " + table.table_name + ".sql"
                     )
+        
+        # Check if input is invalid
+        if st.session_state[f"invalid_input_table-{table.id}"] == True:
+            st.error(lockey("query_label_invalid_input"))
+            st.session_state[f"invalid_input_table-{table.id}"] = False
+        
 
 def define_column_config(column):
     # Check if column[is_required] is exist (backward compatibility)
@@ -156,12 +170,23 @@ def define_column_config(column):
             required = is_required
         )
 
+def is_input_valid(data, column_config):
+    for column_name, configuration in column_config.items():
+        if (configuration["required"] == True) and (data[column_name].isnull().any()):
+            return False
+    
+    return True
+
 def generate_execute_query(row, query, columns_name):
     generated_uuid = str(uuid.uuid4())
     query = query.replace(f"{{uuid}}", generated_uuid)
 
     for column in columns_name:
-        query = query.replace(f"{{{column}}}", str(row[column]))
+        if (row[column] == None) or (str(row[column]).lower() == "null"):
+            query = query.replace(f"'{{{column}}}'", "NULL")
+            query = query.replace(f"{{{column}}}", "NULL")
+        else:
+            query = query.replace(f"{{{column}}}", str(row[column]))
 
     return query
 
