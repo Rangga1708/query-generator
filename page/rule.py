@@ -232,13 +232,17 @@ def update_feature():
          reference_column = "feature_id"
       ).to_dict(orient = "records")
 
-      # Convert lov from list into string split by pipe
       for table in st.session_state.update_tables:
          for i in range(len(table["columns"])):
             if len(table["columns"][i]["lov"]) != 0:
+               # Convert lov from list into string split by pipe
                table["columns"][i]["lov"] = "|".join(table["columns"][i]["lov"])
             else:
                table["columns"][i]["lov"] = None
+            
+            # Set default value for is_required (backward compatibility)
+            if "is_required" not in table["columns"][i]:
+               table["columns"][i]["is_required"] = True
    
    if "response_put_update_feature" not in st.session_state:
       st.session_state.response_put_update_feature = None
