@@ -25,6 +25,8 @@
   "rule_title_insert_feature": ":material/add_box: Insert New Feature",
   "rule_title_insert_table": ":material/add_box: Insert New Table",
   "rule_label_import_feature": "Import the features rule in JSON file",
+  "rule_label_copy_paste_feature": "or paste the json here",
+  "rule_button_import_feature": "Import",
   "rule_label_invalid_file_format": "Invalid format. Please upload the correct one.",
   "rule_button_save_imported_feature": "Save",
   "rule_label_feature_import_success": "Feature imported successfully. You can generate the query.",

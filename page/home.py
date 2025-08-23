@@ -16,7 +16,7 @@ def app():
         Here are the steps to generate the query:
         1. Go to **Create Rule** menu
         2. Go to **Import Feature** tab
-        3. Import the JSON file (You can download it from [here]({st.secrets["JSON_URL"]}))
+        3. Import or paste the JSON file (You can download it from [here]({st.secrets["JSON_URL"]}))
         4. Click **Save**
         5. Go to **Create Query** menu
         6. Find the feature you want and follow the notes

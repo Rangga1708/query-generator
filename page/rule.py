@@ -42,9 +42,17 @@ def import_feature():
       type = "json"
    )
 
-   if file is not None:
+   json_string = st.text_area(
+      label = lockey("rule_label_copy_paste_feature"),
+      disabled = file is not None
+   )
+
+   if (file is not None) or (json_string not in (None, "")):
       try:
-         file = json.loads(file.read())
+         if file is not None:
+            file = json.loads(file.read())
+         else:
+            file = json.loads(json_string)
       except:
          st.error(lockey("rule_label_invalid_file_format"))
          return {}
@@ -55,7 +63,12 @@ def import_feature():
 
       features = pd.DataFrame(file["features"])
       tables = pd.DataFrame(file["tables"])
-      features_tables = pd.merge(features, tables, left_on = "id", right_on = "feature_id", how = "inner")
+
+      try:
+         features_tables = pd.merge(features, tables, left_on = "id", right_on = "feature_id", how = "inner")
+      except:
+         st.error(lockey("rule_label_invalid_file_format"))
+         return {}
 
       st.dataframe(
          data = features_tables[["name", "table_name"]],
