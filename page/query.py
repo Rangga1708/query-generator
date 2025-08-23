@@ -182,7 +182,7 @@ def generate_execute_query(row, query, columns_name):
     query = query.replace(f"{{uuid}}", generated_uuid)
 
     for column in columns_name:
-        if (row[column] == None) or (str(row[column]).lower() == "null"):
+        if (row[column] in (None, "")) or (str(row[column]).lower() == "null"):
             query = query.replace(f"'{{{column}}}'", "NULL")
             query = query.replace(f"{{{column}}}", "NULL")
         else:
